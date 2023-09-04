@@ -1,3 +1,5 @@
+import time
+
 class Parte():
     def __init__(self, nome, nivel_ataque, nivel_defesa, energia_consumida):
         self.nome = nome
@@ -19,15 +21,18 @@ class Parte():
         self.nivel_defesa = self.nivel_defesa - nivel_ataque
         if self.nivel_defesa <= 0:
             self.nivel_defesa = 0
-        print(f'Nivel de defesa parte :{self.nivel_defesa} ')
-
+        time.sleep(3)
+        print('Analisando batalha!')
+        print(f'Nível de defesa parte :{self.nivel_defesa} ')
+        print(f'Energia consumida: {self.energia_consumida}%')
+        print()
 
     def esta_disponivel(self):
         return self.nivel_defesa > 0
-    print('Arma está disponível!')
 
     def __str__(self):
         return f"{self.nome} - Ataque: {self.nivel_ataque}, Defesa: {self.nivel_defesa}, Energia Consumida: {self.energia_consumida}"
+
 
 class Robo:
     def __init__(self, nome, codigo_cor):
@@ -36,10 +41,10 @@ class Robo:
         self.energia = 100
         self.partes = [
             Parte('Cabeça', nivel_ataque=5, nivel_defesa=10, energia_consumida=5),
-            Parte('Arma', nivel_ataque=15, nivel_defesa=25, energia_consumida=10),
-            Parte('Arma esquerda', nivel_ataque=3, nivel_defesa=20, energia_consumida=10),
-            Parte('Arma direita', nivel_ataque=6, nivel_defesa=20, energia_consumida=10),
-            Parte('Perna esquerda', nivel_ataque=4, nivel_defesa=20, energia_consumida=15),
+            Parte('Arma', nivel_ataque=15, nivel_defesa=25, energia_consumida=20),
+            Parte('Arma esquerda', nivel_ataque=3, nivel_defesa=10, energia_consumida=5),
+            Parte('Arma direita', nivel_ataque=6, nivel_defesa=12, energia_consumida=10),
+            Parte('Perna esquerda', nivel_ataque=4, nivel_defesa=15, energia_consumida=15),
             Parte('Perna direita', nivel_ataque=8, nivel_defesa=20, energia_consumida=15)
         ]
 
@@ -47,7 +52,8 @@ class Robo:
         print(self.codigo_cor)
         self.saudar()
         self.mostrar_energia()
-
+        print()
+        self.mostrar_partes_disponiveis()
         print(cores['Branco'])
 
     def saudar(self):
@@ -60,10 +66,18 @@ class Robo:
         parte_usada = self.partes[parte_para_usar]
         parte_alvo = robo_inimigo.partes[parte_para_atacar]
         energia_gasta = parte_usada.energia_consumida
-        mensagem = f"{self.nome} usou {parte_usada.nome} para atacar {robo_inimigo.nome}'s o {parte_alvo.nome} e gastou {energia_gasta} % de energia."
+        mensagem = f"{self.nome} ({self.codigo_cor}) usou {parte_usada.nome} para atacar {robo_inimigo.nome} ({robo_inimigo.codigo_cor})'s {parte_alvo.nome} e gastou {energia_gasta} % de energia."
         print(mensagem)
         robo_inimigo.partes[parte_para_atacar].reducao_defesa(self.partes[parte_para_usar].nivel_ataque)
         self.energia -= energia_gasta
+        print(f"{self.nome} está atacando {robo_inimigo.nome}!\n")
+        time.sleep(5)
+        print(f"\nPartes disponíveis de {robo_inimigo.nome} ({robo_inimigo.codigo_cor}):")
+        for i, parte in enumerate(robo_inimigo.partes):
+            if parte.esta_disponivel():
+                print(f"{i}: {parte.nome}")
+                print()
+
 
     def obter_status_parte(self):
         status_parte = {}
@@ -81,10 +95,11 @@ class Robo:
     def esta_ligado(self):
         return self.energia >= 0
 
-    def mostrar_partes(self):
-        print("Partes do Robô:")
+    def mostrar_partes_disponiveis(self):
+        print("Partes disponíveis:")
         for i, parte in enumerate(self.partes):
-            print(f"{i}: {parte}")
+            if parte.esta_disponivel():
+                print(f"{i}: {parte}")
 
     def verificar_vencedor(self):
         if not self.esta_ligado():
@@ -130,8 +145,6 @@ robo_art = r"""
          || ||        || ||         |5: {nome_perna_dir}
        __|\_/|__    __|\_/|__       |Is available: {status_perna_dir}
       /___n_n___\  /___n_n___\      |Attack: {ataque_perna_dir}
-                                    |Defense: {defesa_perna_dir}
-                                    |Energy consumption: {energia_perna_dir}
 """
 
 cores = {
@@ -147,7 +160,6 @@ cores = {
 
 
 def jogar():
-    
     jogando = True
     print('Bem vindo ao Jogo!')
     print(robo_art)
@@ -169,9 +181,10 @@ def jogar():
             robo_inimigo = robo_um
         robo_atual.mostrar_status()
 
+        print(f'É a vez de {robo_atual.nome} ({robo_atual.codigo_cor})!')
         print('Escolha a parte para usar e a parte do inimigo para atacar:')
-        parte_para_usar = int(input('Escolha uma parte para atacar o inimigo:'))
-        parte_para_atacar = int(input('Escolha uma peça do inimigo para atacar:'))
+        parte_para_usar = int(input(f'Escolha uma parte para atacar o inimigo {robo_inimigo.nome} ({robo_inimigo.codigo_cor}):'))
+        parte_para_atacar = int(input(f'Escolha uma peça de {robo_inimigo.nome} ({robo_inimigo.codigo_cor}) para atacar:'))
 
         if parte_para_usar < 0 or parte_para_usar >= len(
                 robo_atual.partes) or parte_para_atacar < 0 or parte_para_atacar >= len(robo_inimigo.partes):
@@ -183,6 +196,8 @@ def jogar():
 
         if robo_atual.verificar_vencedor():
             jogando = False
+
+    print('Fim do jogo!')
 
 
 def construir_robo():
