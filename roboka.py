@@ -73,7 +73,7 @@ class Robo:
         print(f"{self.nome} está atacando {robo_inimigo.nome}!\n")
         time.sleep(5)
         print(f"\nPartes disponíveis de {robo_inimigo.nome} ({robo_inimigo.codigo_cor}):")
-        for i, parte in enumerate(robo_inimigo.partes):
+        for i, parte in enumerate(robo_inimigo.partes): # contagem de forma automática
             if parte.esta_disponivel():
                 print(f"{i}: {parte.nome}")
                 print()
@@ -103,7 +103,7 @@ class Robo:
 
     def verificar_vencedor(self):
         if not self.esta_ligado():
-            print(f"{self.nome} está desligado. {self.nome} perdeu o jogo!")
+            print(f"{self.nome} está desligando. \n{self.nome} perdeu o jogo!")
             return True
         if not self.ha_uma_peca_disponivel():
             print(f"{self.nome} não tem mais peças disponíveis. {self.nome} perdeu o jogo!")
@@ -196,7 +196,7 @@ def jogar():
 
         if robo_atual.verificar_vencedor():
             jogando = False
-
+    print()
     print('Fim do jogo!')
 
 
@@ -214,7 +214,7 @@ def escolha_cor():
     for cor in cores:
         print(cor)
     escolha_cor = input('Escolha uma cor: ')
-    codigo_cor = cores.get(escolha_cor.capitalize(), cores['Branco'])
+    codigo_cor = cores.get(escolha_cor.capitalize(), cores['Branco']) #retornar e deixar tudo igual
     return codigo_cor
 
 
